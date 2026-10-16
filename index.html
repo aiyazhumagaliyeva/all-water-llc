@@ -221,7 +221,8 @@ body.closed #startBtn svg { display: none; }
     sp.appendChild(el('div', 'h1', text, 'left:' + x + 'px;top:42px'));
     sp.appendChild(el('div', 'rule', null, 'left:' + x + 'px;top:95px;width:' + (x < 500 ? 462 : 468) + 'px'));
   }
-  function img(src, cls, style) { var i = el('img', cls, null, style); i.src = src; i.alt = ''; i.draggable = false; return i; }
+  var VER = '8'; // bump when images change so browsers fetch fresh copies
+  function img(src, cls, style) { var i = el('img', cls, null, style); i.src = src + '?v=' + VER; i.alt = ''; i.draggable = false; return i; }
 
   var built = {};
   function build(k) {             // k: 0 cover, 1..N spreads, LAST back
@@ -506,7 +507,7 @@ body.closed #startBtn svg { display: none; }
   window.addEventListener('resize', fit); fit(); rest(0);
 
   // preload images
-  ['img/cover.webp', 'img/back.webp'].concat(SPREADS.filter(function (s) { return s.src; }).map(function (s) { return s.src; })).forEach(function (s) { new Image().src = s; });
+  ['img/cover.webp', 'img/back.webp'].concat(SPREADS.filter(function (s) { return s.src; }).map(function (s) { return s.src; })).forEach(function (s) { new Image().src = s + '?v=' + VER; });
 
   // ---------- Gallery ----------
   var gallery = document.getElementById('gallery'), grid = document.getElementById('grid');
