@@ -127,13 +127,13 @@ button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
 .arrow.on { opacity: .75; pointer-events: auto; }
 .arrow.on:hover { opacity: 1; }
 .arrow.l { left: -52px; } .arrow.r { right: -52px; }
-body.closed #startBtn svg { display: none; }
+body.closed #startBtn svg, body.atend #endBtn svg { display: none; }
 @media (prefers-reduced-motion: reduce) { .book, .thumb .tb, .lb, .arrow { transition: none; } }
 </style>
 
 <nav class="nav" aria-label="Catalogue">
   <button id="startBtn" type="button"><svg width="15" height="13" viewBox="0 0 15 13" fill="none" aria-hidden="true"><path d="M6.5 1L1 6.5L6.5 12M1 6.5H14.5" stroke="currentColor" stroke-width="1.2"/></svg>Start</button>
-  <button id="galleryBtn" type="button">Gallery</button>
+  <button id="endBtn" type="button">End<svg width="15" height="13" viewBox="0 0 15 13" fill="none" aria-hidden="true"><path d="M8.5 1L14 6.5L8.5 12M14 6.5H0.5" stroke="currentColor" stroke-width="1.2"/></svg></button>
 </nav>
 <main class="stage" id="stage"><div id="zoomer"><div class="book" id="book"></div></div></main>
 <div class="foot">All Water LLC</div>
@@ -370,7 +370,7 @@ body.closed #startBtn svg { display: none; }
   function rest(s) {
     book.style.transition = 'none'; book.style.transform = 'none'; void book.offsetWidth; book.style.transition = '';
     leaf.hidden = true;
-    arrows(s >= 1 && s <= N); document.body.classList.toggle('closed', s === 0);
+    arrows(s >= 1 && s <= N); document.body.classList.toggle('closed', s === 0); document.body.classList.toggle('atend', s === LAST);
     if (s === 0) { hide(baseL); show(baseR, 0, 0, COVER_X, 528, 744, true); setHit(hitL); setHit(hitR, COVER_X, 528); }
     else if (s === LAST) { hide(baseL); show(baseR, LAST, 0, BACK_X, 528, 744, true); setHit(hitL, BACK_X, 528); setHit(hitR); }
     else { hide(baseL); show(baseR, s, 0, 0, 1050, 744, true); setHit(hitL, 0, 525); setHit(hitR, 525, 525); }
@@ -415,7 +415,7 @@ body.closed #startBtn svg { display: none; }
   }
   function prev() {
     if (busy || state <= 0) return; busy = true;
-    var a = state - 1; if (a === 0) arrows(false);
+    var a = state - 1; if (a === 0) arrows(false); document.body.classList.remove('atend');
     function turn() { setupTurn(a); leaf.style.transform = 'rotateY(-180deg)'; animate(-180, 0, function () { state = a; rest(state); busy = false; }); }
     if (state === LAST) slideTo(BACK_X, BACK_LAND, function () { hide(baseR); book.style.transition = 'none'; book.style.transform = 'none'; turn(); });
     else turn();
@@ -491,6 +491,7 @@ body.closed #startBtn svg { display: none; }
   window.addEventListener('resize', function () { if (!lb.hidden) reset(); });
   document.getElementById('lbClose').addEventListener('click', closeLB);
   document.getElementById('startBtn').addEventListener('click', function () { if (!busy) goTo(0); });
+  document.getElementById('endBtn').addEventListener('click', function () { if (!busy) goTo(LAST); });
   document.addEventListener('keydown', function (e) {
     if (!lb.hidden) { if (e.key === 'Escape') closeLB(); return; }
     if (!gallery.hidden) { if (e.key === 'Escape') closeGallery(); return; }
@@ -532,7 +533,6 @@ body.closed #startBtn svg { display: none; }
     gallery.hidden = false;
   }
   function closeGallery() { gallery.hidden = true; }
-  document.getElementById('galleryBtn').addEventListener('click', openGallery);
   document.getElementById('closeGallery').addEventListener('click', closeGallery);
 })();
 </script>
